@@ -1,0 +1,22 @@
+# Maven build output
+target/
+*.war
+*.jar
+
+# IDE and Editor files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Sensitive / local configuration
+# To keep local credentials private, copy db.properties.example to db.properties
+# db.properties
+
+# Logs and OS files
+*.log
+cookies.txt
+.DS_Store
+Thumbs.db

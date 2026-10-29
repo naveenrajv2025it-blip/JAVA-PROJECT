@@ -1,0 +1,12 @@
+# Database Connection Properties Example
+# Copy this file to db.properties and set your local credentials, or provide environment variables.
+db.driver=com.mysql.cj.jdbc.Driver
+db.url=jdbc:mysql://localhost:3306/campus_lost_found_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+db.user=root
+db.password=YOUR_SECURE_PASSWORD
+
+# HikariCP Connection Pool Configuration
+pool.maxSize=10
+pool.minIdle=2
+pool.connectionTimeout=30000
+pool.idleTimeout=600000
