@@ -10,7 +10,8 @@ import java.io.File;
 
 public class EmbeddedServer {
     public static void main(String[] args) throws Exception {
-        int port = 8080;
+        String portEnv = System.getenv("PORT");
+        int port = (portEnv != null && !portEnv.trim().isEmpty()) ? Integer.parseInt(portEnv.trim()) : 8080;
         Tomcat tomcat = new Tomcat();
         tomcat.setPort(port);
         tomcat.getConnector(); // Triggers initialization of default HTTP connector
