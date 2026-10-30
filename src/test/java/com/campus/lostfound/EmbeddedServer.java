@@ -19,7 +19,15 @@ public class EmbeddedServer {
         String webappDir = new File("src/main/webapp").getAbsolutePath();
         File classesDir = new File("target/classes");
 
-        // Context: Primary Tomcat path (/campus-lost-and-found)
+        // 1. Primary Root Context ("") so the home domain loads directly without 404
+        StandardContext rootCtx = (StandardContext) tomcat.addWebapp("", webappDir);
+        rootCtx.setParentClassLoader(EmbeddedServer.class.getClassLoader());
+        WebResourceRoot rootResources = new StandardRoot(rootCtx);
+        rootResources.setCachingAllowed(false);
+        rootResources.addPreResources(new DirResourceSet(rootResources, "/WEB-INF/classes", classesDir.getAbsolutePath(), "/"));
+        rootCtx.setResources(rootResources);
+
+        // 2. Also support /campus-lost-and-found path for backward compatibility
         StandardContext ctx = (StandardContext) tomcat.addWebapp("/campus-lost-and-found", webappDir);
         ctx.setParentClassLoader(EmbeddedServer.class.getClassLoader());
         WebResourceRoot resources = new StandardRoot(ctx);
