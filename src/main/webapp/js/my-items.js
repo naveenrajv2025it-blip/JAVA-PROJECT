@@ -40,7 +40,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Load User Reports
   const allItems = await API.getItems();
-  const userItems = allItems.filter(it => (it.user && (it.user.id === currentUser.id || it.user.id === currentUser.userId)));
+  const userItems = allItems.filter(it => {
+    return (
+      (it.userId && currentUser.id && Number(it.userId) === Number(currentUser.id)) ||
+      (it.userId && currentUser.userId && Number(it.userId) === Number(currentUser.userId)) ||
+      (it.user && (it.user.id === currentUser.id || it.user.id === currentUser.userId)) ||
+      (currentUser.email && it.contactEmail && currentUser.email.toLowerCase() === it.contactEmail.toLowerCase())
+    );
+  });
 
   // Load User Claims
   const userClaims = await API.getClaims({ claimantId: currentUser.id });

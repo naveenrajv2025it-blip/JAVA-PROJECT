@@ -30,8 +30,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   await renderItemView(item);
 
   async function renderItemView(item) {
-    const isOwner = currentUser && (currentUser.id === (item.user && item.user.id) || currentUser.userId === (item.user && item.user.id));
-    const isAdmin = currentUser && currentUser.role === 'ADMIN';
+    const isOwner = !!(currentUser && (
+      (currentUser.id && item.userId && Number(currentUser.id) === Number(item.userId)) ||
+      (currentUser.userId && item.userId && Number(currentUser.userId) === Number(item.userId)) ||
+      (currentUser.id && item.user && item.user.id && Number(currentUser.id) === Number(item.user.id)) ||
+      (currentUser.userId && item.user && item.user.id && Number(currentUser.userId) === Number(item.user.id)) ||
+      (currentUser.email && item.contactEmail && currentUser.email.toLowerCase() === item.contactEmail.toLowerCase()) ||
+      (currentUser.email && item.user && item.user.email && currentUser.email.toLowerCase() === item.user.email.toLowerCase())
+    ));
+    const isAdmin = !!(currentUser && currentUser.role === 'ADMIN');
     const canClaim = item.type === 'FOUND' && item.status !== 'RESOLVED' && !isOwner;
     const canResolve = (isOwner || isAdmin) && item.status !== 'RESOLVED';
 

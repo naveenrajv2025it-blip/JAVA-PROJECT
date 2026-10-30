@@ -97,6 +97,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
+      // Current authenticated session
+      let currentUser = await API.checkSession();
+
       grid.innerHTML = items.map(item => {
         const phone = item.contactPhone || (item.user && item.user.phone) || '';
         const email = item.contactEmail || (item.user && item.user.email) || '';
@@ -107,6 +110,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const spot = UI.escapeHTML(item.specificSpot || item.location || 'REC Campus');
         const desc = item.description ? UI.escapeHTML(item.description) : '';
         const cleanPhone = phone.replace(/[^0-9]/g, '');
+
+        // Only the student who posted this item (or an admin) can see the delete button
+        const isOwner = !!(currentUser && (
+          (currentUser.id && item.userId && Number(currentUser.id) === Number(item.userId)) ||
+          (currentUser.userId && item.userId && Number(currentUser.userId) === Number(item.userId)) ||
+          (currentUser.email && item.contactEmail && currentUser.email.toLowerCase() === item.contactEmail.toLowerCase()) ||
+          (currentUser.email && item.user && item.user.email && currentUser.email.toLowerCase() === item.user.email.toLowerCase())
+        ));
+        const isAdmin = !!(currentUser && currentUser.role === 'ADMIN');
+        const canDelete = isOwner || isAdmin;
 
         return `
           <div class="mobile-item-card">
@@ -121,9 +134,15 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div style="position: absolute; top: 10px; left: 10px;">
                 <span class="badge ${typeClass}">${typeLabel}</span>
               </div>
-              <div style="position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 600; background: rgba(0,0,0,0.65); color: #fff; padding: 3px 8px; border-radius: 6px;">
+              <div style="position: absolute; top: 10px; right: ${canDelete ? '78px' : '10px'}; font-size: 11px; font-weight: 600; background: rgba(0,0,0,0.65); color: #fff; padding: 3px 8px; border-radius: 6px;">
                 ${UI.formatDate(item.date)}
               </div>
+              ${canDelete ? `
+                <button type="button" class="card-delete-icon-btn" onclick="handleFeedItemDelete(${item.id}, event)" title="Delete your post">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                  <span>Delete</span>
+                </button>
+              ` : ''}
             </div>
 
             <div class="card-body">
@@ -161,6 +180,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                   ` : ''}
                 </div>
               </div>
+
+              ${canDelete ? `
+                <div style="margin-top: 12px; padding-top: 8px; border-top: 1px dashed var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 11px; color: var(--success); font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Your Listing
+                  </span>
+                  <button type="button" class="btn-delete-card-pill" onclick="handleFeedItemDelete(${item.id}, event)" title="Delete this post">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    Delete Post
+                  </button>
+                </div>
+              ` : ''}
             </div>
           </div>
         `;
@@ -177,6 +209,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  // Global handler for deleting a feed item
+  window.handleFeedItemDelete = async function(itemId, event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    const confirmed = confirm('Are you sure you want to permanently delete this listing? It will be removed from the campus feed.');
+    if (!confirmed) return;
+
+    try {
+      await API.deleteItem(itemId);
+      UI.showToast('Listing Removed', 'Your post was successfully deleted from the feed.', 'success');
+      setTimeout(() => {
+        renderFeed();
+      }, 400);
+    } catch (err) {
+      UI.showToast('Delete Failed', err.message || 'Unable to delete listing.', 'error');
+    }
+  };
+
   // Initial render
   setActivePill(currentType);
 });
+

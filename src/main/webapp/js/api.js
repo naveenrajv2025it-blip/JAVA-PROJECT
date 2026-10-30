@@ -117,6 +117,7 @@ const API = (function() {
         return (data || []).map(item => ({
           id: item.itemId,
           itemId: item.itemId,
+          userId: item.userId,
           type: (item.itemType || 'LOST').toUpperCase(),
           itemType: (item.itemType || 'LOST').toUpperCase(),
           title: item.title || 'Untitled Item',
@@ -135,6 +136,7 @@ const API = (function() {
           contactPreference: item.contactPreference || 'PHONE',
           user: {
             id: item.userId,
+            userId: item.userId,
             name: item.reporterName || 'Student',
             roll: item.reporterRoll || '',
             email: item.reporterEmail || '',
@@ -156,6 +158,7 @@ const API = (function() {
         return {
           id: item.itemId,
           itemId: item.itemId,
+          userId: item.userId,
           type: (item.itemType || 'LOST').toUpperCase(),
           itemType: (item.itemType || 'LOST').toUpperCase(),
           title: item.title,
