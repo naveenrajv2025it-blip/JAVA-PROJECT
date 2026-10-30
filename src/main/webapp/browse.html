@@ -59,8 +59,38 @@
     .pill-btn.active {
       background: var(--accent-gradient);
       color: #fff;
-      border-color: transparent;
       box-shadow: 0 4px 12px var(--accent-glow);
+    }
+    .filter-pills-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .filter-pills-bar::-webkit-scrollbar {
+      display: none;
+    }
+    .card-contact-actions {
+      display: flex;
+      gap: 8px;
+    }
+    @media (max-width: 440px) {
+      .card-contact-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+      }
+      .card-contact-actions .btn-whatsapp {
+        grid-column: span 2 !important;
+        width: 100% !important;
+      }
+      .contact-action-btn {
+        padding: 9px 8px !important;
+        font-size: 13px !important;
+        min-height: 42px !important;
+      }
     }
     .feed-grid {
       display: grid;
@@ -274,7 +304,7 @@
       
       <!-- Controls: Tabs + Search Bar -->
       <div class="feed-controls">
-        <div class="pill-tabs">
+        <div class="pill-tabs filter-pills-bar">
           <button class="pill-btn active" data-type="ALL" id="pill-all">All Items (<span id="count-all">0</span>)</button>
           <button class="pill-btn" data-type="LOST" id="pill-lost">Lost Items (<span id="count-lost">0</span>)</button>
           <button class="pill-btn" data-type="FOUND" id="pill-found">Found Items (<span id="count-found">0</span>)</button>
