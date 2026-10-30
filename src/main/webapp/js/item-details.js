@@ -214,12 +214,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const deleteBtn = document.getElementById('btn-delete-item');
     if (deleteBtn) {
-      deleteBtn.addEventListener('click', async () => {
-        if (confirm('Are you sure you want to delete this listing permanently?')) {
-          await API.deleteItem(item.id);
-          UI.showToast('Deleted', 'Listing was removed.', 'info');
-          setTimeout(() => window.location.href = 'browse.html', 600);
-        }
+      deleteBtn.addEventListener('click', () => {
+        UI.confirmDialog({
+          title: 'Delete Listing?',
+          message: 'This item will be permanently removed from the campus feed if you click delete.',
+          confirmText: 'Yes, Delete',
+          cancelText: 'Cancel',
+          isDestructive: true,
+          onConfirm: async () => {
+            try {
+              await API.deleteItem(item.id);
+              UI.showToast('Listing Removed', 'The item was deleted.', 'info');
+              setTimeout(() => window.location.href = 'browse.html', 500);
+            } catch (err) {
+              UI.showToast('Delete Failed', err.message || 'Unable to delete listing.', 'error');
+            }
+          }
+        });
       });
     }
   }

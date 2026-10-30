@@ -210,24 +210,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Global handler for deleting a feed item
-  window.handleFeedItemDelete = async function(itemId, event) {
+  window.handleFeedItemDelete = function(itemId, event) {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
     }
 
-    const confirmed = confirm('Are you sure you want to permanently delete this listing? It will be removed from the campus feed.');
-    if (!confirmed) return;
-
-    try {
-      await API.deleteItem(itemId);
-      UI.showToast('Listing Removed', 'Your post was successfully deleted from the feed.', 'success');
-      setTimeout(() => {
-        renderFeed();
-      }, 400);
-    } catch (err) {
-      UI.showToast('Delete Failed', err.message || 'Unable to delete listing.', 'error');
-    }
+    UI.confirmDialog({
+      title: 'Delete Listing?',
+      message: 'This item will be permanently removed from the campus feed if you click delete.',
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await API.deleteItem(itemId);
+          UI.showToast('Listing Removed', 'The item has been removed from the campus feed.', 'success');
+          setTimeout(() => {
+            renderFeed();
+          }, 350);
+        } catch (err) {
+          UI.showToast('Delete Failed', err.message || 'Unable to delete listing.', 'error');
+        }
+      }
+    });
   };
 
   // Initial render

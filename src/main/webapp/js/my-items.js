@@ -216,10 +216,21 @@ window.markItemResolved = async function(itemId) {
   }
 };
 
-window.deleteUserItem = async function(itemId) {
-  if (confirm('Are you sure you want to delete this listing?')) {
-    await API.deleteItem(itemId);
-    UI.showToast('Deleted', 'Item was removed.', 'info');
-    setTimeout(() => window.location.reload(), 500);
-  }
+window.deleteUserItem = function(itemId) {
+  UI.confirmDialog({
+    title: 'Delete Listing?',
+    message: 'This item will be permanently removed from the campus feed if you click delete.',
+    confirmText: 'Yes, Delete',
+    cancelText: 'Cancel',
+    isDestructive: true,
+    onConfirm: async () => {
+      try {
+        await API.deleteItem(itemId);
+        UI.showToast('Listing Removed', 'The item was deleted.', 'info');
+        setTimeout(() => window.location.reload(), 450);
+      } catch (err) {
+        UI.showToast('Delete Failed', err.message || 'Unable to delete listing.', 'error');
+      }
+    }
+  });
 };
