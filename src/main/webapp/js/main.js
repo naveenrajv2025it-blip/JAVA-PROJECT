@@ -157,12 +157,11 @@ const UI = {
     const user = await API.checkSession();
     const navActions = document.getElementById('nav-actions');
 
-    // Clean out any legacy admin/demo links from all nav bars
+    // Clean out any legacy admin/dashboard links from all nav bars
     document.querySelectorAll('.nav-link').forEach(link => {
       const href = link.getAttribute('href');
       if (href === 'admin.html' || href === 'my-items.html') {
-        if (!user && href === 'my-items.html') link.remove();
-        if (href === 'admin.html') link.remove();
+        link.remove();
       }
     });
 
