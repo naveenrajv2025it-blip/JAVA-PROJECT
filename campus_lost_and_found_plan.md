@@ -56,7 +56,7 @@ graph TD
     end
 
     UI --> JS
-    JS -->|HTTP JSON / REST| Controller_Layer
+    JS -->|"HTTP JSON / REST"| Controller_Layer
     Controller_Layer --> AuthFilter
     AuthFilter --> Business_Layer
     Business_Layer --> Data_Layer

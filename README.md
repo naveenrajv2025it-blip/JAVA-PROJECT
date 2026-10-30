@@ -103,12 +103,12 @@ graph TD
         ClaimsTbl[("claims")]
     end
     
-    Client -->|HTTP / JSON REST| AuthFilter
+    Client -->|"HTTP / JSON REST"| AuthFilter
     AuthFilter --> Servlets
     Servlets --> Services
     Services --> DAOs
     DAOs --> DBConnection
-    DBConnection -->|JDBC (Port 3306)| Database
+    DBConnection -->|"JDBC Port 3306"| Database
 ```
 
 ---
